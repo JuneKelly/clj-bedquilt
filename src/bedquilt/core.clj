@@ -49,15 +49,20 @@
     {:_id (:_id m)
      :data (-> m
                (dissoc :_id)
-               json/encode)}
+               json/generate-string)}
     {:_id (generate-id!)
-     :data m}))
+     :data (json/generate-string m)}))
 
 
 (defn row->map [row-data]
   (comment "TODO"))
 
 
-(defn insert! [data]
-  (let [row-data (map->row data)]
-    nil))
+(defn insert! [dbspec collection data]
+  (let [row (map->row data)]
+    (jdbc/execute! dbspec
+                   [(str "insert into " collection " (_id, data) "
+                         "values (cast(? as uuid), "
+                         "cast(? as json));")
+                    (:_id row)
+                    (:data row)])))
