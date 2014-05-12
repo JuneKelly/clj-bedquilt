@@ -45,9 +45,9 @@
    generating _id field if necessary"
   [m]
   (if (has-id? m)
-    {:id (:_id m)
+    {:_id (:_id m)
      :data (dissoc :_id m)}
-    {:id (generate-id!)
+    {:_id (generate-id!)
      :data m}))
 
 
