@@ -5,4 +5,5 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/java.jdbc "0.3.3"]
+                 [cheshire "5.3.1"]
                  [postgresql/postgresql "8.4-702.jdbc4"]])

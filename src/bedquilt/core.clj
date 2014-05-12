@@ -1,5 +1,6 @@
 (ns bedquilt.core
-  (:require [clojure.java.jdbc :as jdbc]))
+  (:require [clojure.java.jdbc :as jdbc]
+            [cheshire.core :as json]))
 
 
 (defn get-db [{:keys [db-host db-name user password]}]
@@ -46,7 +47,9 @@
   [m]
   (if (has-id? m)
     {:_id (:_id m)
-     :data (dissoc :_id m)}
+     :data (-> m
+               (dissoc :_id)
+               json/encode)}
     {:_id (generate-id!)
      :data m}))
 
