@@ -60,9 +60,23 @@
 
 (defn insert! [dbspec collection data]
   (let [row (map->row data)]
-    (jdbc/execute! dbspec
-                   [(str "insert into " collection " (_id, data) "
-                         "values (cast(? as uuid), "
-                         "cast(? as json));")
-                    (:_id row)
-                    (:data row)])))
+    (do
+      (create-collection! dbspec collection)
+      (jdbc/execute! dbspec
+                     [(str "insert into " collection " (_id, data) "
+                           "values (cast(? as uuid), "
+                           "cast(? as json));")
+                      (:_id row)
+                      (:data row)]))))
+
+
+(defn get [dbspec collection id]
+  (comment "TODO"))
+
+
+(defn delete! [dbspec collection id]
+  (comment "TODO"))
+
+
+(defn find [dbspec collection query-map]
+  (comment "TODO"))
