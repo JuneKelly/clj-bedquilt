@@ -3,6 +3,7 @@
             [clj-time.core :as time]
             [clj-time.coerce :refer [to-sql-time from-sql-time]]
             [bedquilt.admin :as admin]
+            [bedquilt.util :as util]
             [cheshire.core :as json]))
 
 
@@ -35,11 +36,23 @@
      :data (json/generate-string m)}))
 
 
-(defn row->map [row-data]
-  (comment "TODO"))
+(defn row->map
+  "Transform a database row into a clojure map, resembling json."
+  [row]
+  (let [parsed-json (json/parse-string (str (:data row)))
+        id (:_id row)
+        created (:_created row)]
+    (if (not (nil? id))
+      (-> parsed-json
+          (assoc :_id id)
+          (assoc :_meta {:created created})
+          util/json-coerce)
+      nil)))
 
 
-(defn insert! [dbspec collection data]
+(defn insert!
+  "Insert the supplied data into the specified collection"
+  [dbspec collection data]
   (let [row (map->row data)
         now (-> (time/now)
                 to-sql-time)]
@@ -50,8 +63,7 @@
                            "values (cast(? as uuid), "
                            "cast(? as json),"
                            "?"
-                           ");"
-                           )
+                           ");")
                       (:_id row)
                       (:data row)
                       now])
@@ -62,6 +74,17 @@
   (comment "TODO"))
 
 
-(defn find-one [dbspec collection id]
-  (comment "TODO"))
+(defn find-one
+  "retreive a single document from the specified collection,
+   whose id matches the one supplied. If the document does not exist then
+   nil is returned instead"
+  [dbspec collection id]
+  (let [db-row (first (jdbc/query
+                       dbspec
+                       [(str "select * from " collection " "
+                             "where _id = cast(? as uuid)")
+                        id]))]
+    (if (not (nil? (:_id db-row)))
+      (row->map db-row)
+      nil)))
 
