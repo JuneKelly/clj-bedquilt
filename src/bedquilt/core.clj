@@ -76,7 +76,8 @@
                            )
                       (:_id row)
                       (:data row)
-                      now]))))
+                      now])
+      (:_id row))))
 
 
 (defn delete! [dbspec collection id]
