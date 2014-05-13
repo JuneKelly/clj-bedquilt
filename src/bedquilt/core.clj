@@ -2,6 +2,7 @@
   (:require [clojure.java.jdbc :as jdbc]
             [clj-time.core :as time]
             [clj-time.coerce :refer [to-sql-time from-sql-time]]
+            [bedquilt.admin :as admin]
             [cheshire.core :as json]))
 
 
@@ -14,29 +15,6 @@
 
 (defn generate-id! []
   (str (java.util.UUID/randomUUID)))
-
-
-(defn collection-exists? [db-spec collection-name]
-  (let [result (jdbc/query db-spec
-                           ["SELECT EXISTS(
-                             SELECT * FROM information_schema.tables
-                             WHERE table_schema = 'public' AND
-                             table_name = ?);" collection-name])
-        exists (= true (:exists (first result)))]
-    exists))
-
-
-(defn create-collection! [db-spec collection-name]
-  (if (not (collection-exists? db-spec collection-name))
-    (do
-      (jdbc/db-do-commands
-       db-spec
-       (jdbc/create-table-ddl collection-name
-                             [:_id "uuid"]
-                             [:data "json"]
-                             [:_created "timestamp with time zone"]))
-      true)
-    false))
 
 
 (defn has-id? [m]
@@ -66,7 +44,7 @@
         now (-> (time/now)
                 to-sql-time)]
     (do
-      (create-collection! dbspec collection)
+      (admin/create-collection! dbspec collection)
       (jdbc/execute! dbspec
                      [(str "insert into " collection " (_id, data, _created) "
                            "values (cast(? as uuid), "
