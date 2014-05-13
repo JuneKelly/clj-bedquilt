@@ -7,4 +7,5 @@
                  [org.clojure/java.jdbc "0.3.3"]
                  [cheshire "5.3.1"]
                  [clj-time "0.7.0"]
+                 [crypto-random "1.2.0"]
                  [postgresql/postgresql "8.4-702.jdbc4"]])

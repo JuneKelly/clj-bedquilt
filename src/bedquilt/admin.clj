@@ -18,7 +18,7 @@
       (jdbc/db-do-commands
        db-spec
        (jdbc/create-table-ddl collection-name
-                             [:_id "uuid"]
+                             [:_id "varchar(128)"]
                              [:data "json"]
                              [:_created "timestamp with time zone"]))
       true)

@@ -1,5 +1,11 @@
 (ns bedquilt.util
-  (:require [cheshire.core :as json]))
+  (:require [cheshire.core :as json]
+            [crypto.random :as random]))
+
+
+
+(defn random-id! []
+  (random/url-part 16))
 
 
 (defn json-coerce

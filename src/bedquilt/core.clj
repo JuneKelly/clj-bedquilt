@@ -32,7 +32,7 @@
      :data (-> m
                (dissoc :_id)
                json/generate-string)}
-    {:_id (generate-id!)
+    {:_id (util/random-id!)
      :data (json/generate-string m)}))
 
 
@@ -60,10 +60,7 @@
       (admin/create-collection! dbspec collection)
       (jdbc/execute! dbspec
                      [(str "insert into " collection " (_id, data, _created) "
-                           "values (cast(? as uuid), "
-                           "cast(? as json),"
-                           "?"
-                           ");")
+                           "values (?, cast(? as json), ?);")
                       (:_id row)
                       (:data row)
                       now])
