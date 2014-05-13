@@ -1,5 +1,7 @@
 (ns bedquilt.core
   (:require [clojure.java.jdbc :as jdbc]
+            [clj-time.core :as time]
+            [clj-time.coerce :refer [to-sql-time from-sql-time]]
             [cheshire.core :as json]))
 
 
@@ -31,7 +33,8 @@
        db-spec
        (jdbc/create-table-ddl collection-name
                              [:_id "uuid"]
-                             [:data "json"]))
+                             [:data "json"]
+                             [:_created "timestamp with time zone"]))
       true)
     false))
 
@@ -59,24 +62,27 @@
 
 
 (defn insert! [dbspec collection data]
-  (let [row (map->row data)]
+  (let [row (map->row data)
+        now (-> (time/now)
+                to-sql-time)]
     (do
       (create-collection! dbspec collection)
       (jdbc/execute! dbspec
-                     [(str "insert into " collection " (_id, data) "
+                     [(str "insert into " collection " (_id, data, _created) "
                            "values (cast(? as uuid), "
-                           "cast(? as json));")
+                           "cast(? as json),"
+                           "?"
+                           ");"
+                           )
                       (:_id row)
-                      (:data row)]))))
-
-
-(defn get [dbspec collection id]
-  (comment "TODO"))
+                      (:data row)
+                      now]))))
 
 
 (defn delete! [dbspec collection id]
   (comment "TODO"))
 
 
-(defn find [dbspec collection query-map]
+(defn find-one [dbspec collection id]
   (comment "TODO"))
+
