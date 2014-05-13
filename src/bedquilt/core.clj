@@ -79,7 +79,7 @@
   (let [db-row (first (jdbc/query
                        dbspec
                        [(str "select * from " collection " "
-                             "where _id = cast(? as uuid)")
+                             "where _id = ?")
                         id]))]
     (if (not (nil? (:_id db-row)))
       (row->map db-row)

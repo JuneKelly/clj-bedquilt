@@ -18,8 +18,8 @@
       (jdbc/db-do-commands
        db-spec
        (jdbc/create-table-ddl collection-name
-                             [:_id "varchar(128)"]
-                             [:data "json"]
-                             [:_created "timestamp with time zone"]))
+                             [:_id "varchar(128)" :primary :key]
+                             [:data "json" :not :null]
+                             [:_created "timestamp with time zone" :not :null]))
       true)
     false))
