@@ -4,18 +4,16 @@
             [clj-time.coerce :refer [to-sql-time from-sql-time]]
             [bedquilt.admin :as admin]
             [bedquilt.util :as util]
+            [bedquilt.db :as db]
             [cheshire.core :as json]))
 
+
 (declare get-db)
-(declare generate-id)
-(declare has-id?)
+(declare find-one)
+(declare save!)
+
 (declare map->row)
 (declare row-map)
-(declare insert!)
-(declare update!)
-(declare save!)
-(declare find-one)
-(declare doc-exists?)
 
 
 (defn get-db [{:keys [db-host db-name user password]}]
@@ -25,16 +23,12 @@
    :password password})
 
 
-(defn has-id? [m]
-  (contains? m :_id))
-
-
 (defn map->row
   "convert map data into a list of items
    suitable for inserting into table,
    generating _id field if necessary"
   [m]
-  (if (has-id? m)
+  (if (contains? m :_id)
     {:_id (:_id m)
      :data (-> m
                (dissoc :_id)
@@ -55,44 +49,16 @@
       nil)))
 
 
-(defn- insert! [dbspec collection row]
-  (jdbc/execute! dbspec
-                 [(str "insert into " collection " (_id, data) "
-                       "values (?, cast(? as json));")
-                  (:_id row)
-                  (:data row)]))
-
-
-(defn- update! [dbspec collection row]
-  (jdbc/execute! dbspec
-                 [(str "UPDATE " collection " SET data = cast(? as json) "
-                       "WHERE _id = ?")
-                  (:data row)
-                  (:_id row)]))
-
 (defn save!
   "Insert the supplied data into the specified collection"
   [dbspec collection data]
   (let [row (map->row data)]
     (do
       (admin/create-collection! dbspec collection)
-      (if (doc-exists? dbspec collection (:_id row))
-        (update! dbspec collection row)
-        (insert! dbspec collection row))
+      (if (db/doc-exists? dbspec collection (:_id row))
+        (db/update! dbspec collection row)
+        (db/insert! dbspec collection row))
       (:_id row))))
-
-
-(defn delete! [dbspec collection id]
-  (comment "TODO"))
-
-
-(defn doc-exists? [dbspec collection id]
-  (let [result (jdbc/query dbspec
-                           [(str "SELECT EXISTS("
-                                 "SELECT _id from " collection " "
-                                 "WHERE _id = ?);")
-                            id])]
-    (:exists (first result))))
 
 
 (defn find-one
@@ -109,3 +75,6 @@
       (row->map db-row)
       nil)))
 
+
+(defn delete! [dbspec collection id]
+  (comment "TODO"))
