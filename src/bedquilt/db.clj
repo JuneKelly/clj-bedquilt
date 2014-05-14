@@ -9,7 +9,7 @@
 
 (defn insert! [dbspec collection row]
   (jdbc/execute! dbspec
-                 [(str "insert into " collection " (_id, data) "
+                 [(str "insert into " (name collection) " (_id, data) "
                        "values (?, cast(? as json));")
                   (:_id row)
                   (:data row)]))
@@ -17,7 +17,8 @@
 
 (defn update! [dbspec collection row]
   (jdbc/execute! dbspec
-                 [(str "UPDATE " collection " SET data = cast(? as json) "
+                 [(str "UPDATE " (name collection)
+                       " SET data = cast(? as json) "
                        "WHERE _id = ?")
                   (:data row)
                   (:_id row)]))
@@ -26,7 +27,7 @@
 (defn doc-exists? [dbspec collection id]
   (let [result (jdbc/query dbspec
                            [(str "SELECT EXISTS("
-                                 "SELECT _id from " collection " "
-                                 "WHERE _id = ?);")
+                                 "SELECT _id from " (name collection)
+                                 " WHERE _id = ?);")
                             id])]
     (:exists (first result))))

@@ -33,7 +33,7 @@
       (admin/create-collection! dbspec collection)
       (if (db/doc-exists? dbspec collection (:_id row))
         (db/update! dbspec collection row)
-        (db/insert! dbspec collection row))
+        (db/insert! dbspec collection row)
       (:_id row))))
 
 
