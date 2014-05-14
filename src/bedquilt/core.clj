@@ -40,30 +40,38 @@
   "Transform a database row into a clojure map, resembling json."
   [row]
   (let [parsed-json (json/parse-string (str (:data row)))
-        id (:_id row)
-        created (:_created row)]
+        id (:_id row)]
     (if (not (nil? id))
       (-> parsed-json
           (assoc :_id id)
-          (assoc :_meta {:created created})
           util/json-coerce)
       nil)))
 
 
-(defn insert!
+(defn- insert! [dbspec collection row]
+  (jdbc/execute! dbspec
+                 [(str "insert into " collection " (_id, data) "
+                       "values (?, cast(? as json));")
+                  (:_id row)
+                  (:data row)]))
+
+
+(defn- update! [dbspec collection row]
+  (jdbc/execute! dbspec
+                 [(str "UPDATE " collection " SET data = cast(? as json) "
+                       "WHERE _id = ?")
+                  (:data row)
+                  (:_id row)]))
+
+(defn save!
   "Insert the supplied data into the specified collection"
   [dbspec collection data]
-  (let [row (map->row data)
-        now (-> (time/now)
-                to-sql-time)]
+  (let [row (map->row data)]
     (do
       (admin/create-collection! dbspec collection)
-      (jdbc/execute! dbspec
-                     [(str "insert into " collection " (_id, data, _created) "
-                           "values (?, cast(? as json), ?);")
-                      (:_id row)
-                      (:data row)
-                      now])
+      (if (contains? data :_id)
+        (update! dbspec collection row)
+        (insert! dbspec collection row))
       (:_id row))))
 
 
