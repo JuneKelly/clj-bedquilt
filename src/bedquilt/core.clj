@@ -6,16 +6,23 @@
             [bedquilt.util :as util]
             [cheshire.core :as json]))
 
+(declare get-db)
+(declare generate-id)
+(declare has-id?)
+(declare map->row)
+(declare row-map)
+(declare insert!)
+(declare update!)
+(declare save!)
+(declare find-one)
+(declare doc-exists?)
+
 
 (defn get-db [{:keys [db-host db-name user password]}]
   {:subprotocol "postgresql"
    :subname (str "//" db-host "/" db-name)
    :user user
    :password password})
-
-
-(defn generate-id! []
-  (str (java.util.UUID/randomUUID)))
 
 
 (defn has-id? [m]
@@ -69,7 +76,7 @@
   (let [row (map->row data)]
     (do
       (admin/create-collection! dbspec collection)
-      (if (contains? data :_id)
+      (if (doc-exists? dbspec collection (:_id row))
         (update! dbspec collection row)
         (insert! dbspec collection row))
       (:_id row))))
@@ -77,6 +84,15 @@
 
 (defn delete! [dbspec collection id]
   (comment "TODO"))
+
+
+(defn doc-exists? [dbspec collection id]
+  (let [result (jdbc/query dbspec
+                           [(str "SELECT EXISTS("
+                                 "SELECT _id from " collection " "
+                                 "WHERE _id = ?);")
+                            id])]
+    (:exists (first result))))
 
 
 (defn find-one
