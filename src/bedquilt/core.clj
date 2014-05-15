@@ -31,9 +31,9 @@
   (let [row (map->row data)]
     (do
       (admin/create-collection! dbspec collection)
-      (if (db/doc-exists? dbspec collection (:_id row))
-        (db/update! dbspec collection row)
-        (db/insert! dbspec collection row))
+      (if (db/document-exists? dbspec collection (:_id row))
+        (db/update-document! dbspec collection row)
+        (db/insert-document! dbspec collection row))
       (:_id row))))
 
 
@@ -53,7 +53,8 @@
 
 
 (defn delete! [dbspec collection id]
-  (comment "TODO"))
+  (let [result (db/delete-document! dbspec collection id)]
+    (= 1 (first result))))
 
 
 (defn map->row
