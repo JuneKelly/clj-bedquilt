@@ -13,10 +13,6 @@
 (declare find-one)
 (declare save!)
 
-;; inner details
-(declare map->row)
-(declare row->map)
-
 
 (defn get-db [{:keys [db-host db-name user password]}]
   {:subprotocol "postgresql"
@@ -28,7 +24,7 @@
 (defn save!
   "Insert the supplied data into the specified collection"
   [dbspec collection data]
-  (let [row (map->row data)]
+  (let [row (util/map->row data)]
     (do
       (admin/create-collection! dbspec collection)
       (if (db/document-exists? dbspec collection (:_id row))
@@ -48,7 +44,7 @@
                              "where _id = ?")
                         id]))]
     (if (not (nil? (:_id db-row)))
-      (row->map db-row)
+      (util/row->map db-row)
       nil)))
 
 
@@ -59,26 +55,3 @@
   [dbspec collection id]
   (let [result (db/delete-document! dbspec collection id)]
     (= 1 (first result))))
-
-
-;; transformations
-(defn map->row
-  "convert map data into a list of items
-   suitable for inserting into table,
-   generating _id field if necessary"
-  [m]
-  {:_id (or (:_id m) (util/random-id!))
-   :data (-> m
-             (dissoc :_id)
-             json/generate-string)})
-
-
-(defn row->map
-  "Transform a database row into a clojure map, resembling json."
-  [row]
-  (let [parsed-json (json/parse-string (str (:data row)))
-        id (:_id row)]
-    (if (not (nil? id))
-      (-> parsed-json
-          (assoc :_id id))
-      nil)))

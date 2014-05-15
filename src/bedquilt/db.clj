@@ -38,3 +38,4 @@
                  [(str "DELETE FROM " (name collection)
                        " WHERE _id = ?")
                   id]))
+
