@@ -52,23 +52,25 @@
       nil)))
 
 
-(defn delete! [dbspec collection id]
+(defn delete!
+  "Delete a single document from a collection,
+   returns true if the deletion affected an existing document,
+   or false if no documents were removed"
+  [dbspec collection id]
   (let [result (db/delete-document! dbspec collection id)]
     (= 1 (first result))))
 
 
+;; transformations
 (defn map->row
   "convert map data into a list of items
    suitable for inserting into table,
    generating _id field if necessary"
   [m]
-  (if (contains? m :_id)
-    {:_id (:_id m)
-     :data (-> m
-               (dissoc :_id)
-               json/generate-string)}
-    {:_id (util/random-id!)
-     :data (json/generate-string m)}))
+  {:_id (or (:_id m) (util/random-id!))
+   :data (-> m
+             (dissoc :_id)
+             json/generate-string)})
 
 
 (defn row->map
