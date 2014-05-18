@@ -4,6 +4,18 @@ A JSON document store on top of PostgreSQL, using Clojure.
 
 ## Usage
 
+Lets presume we have a PostgreSQL 9.3 installation, with a database
+`bedquilt_test`, created as:
+```sql
+CREATE DATABASE bedquilt_test
+  WITH OWNER = some_user
+       ENCODING = 'UTF8'
+       TABLESPACE = pg_default
+       LC_COLLATE = 'C'
+       LC_CTYPE = 'C'
+       CONNECTION LIMIT = -1;
+```
+
 
 Import the `bedquilt.core` namespace:
 ```clojure
@@ -13,8 +25,8 @@ Import the `bedquilt.core` namespace:
 Get a connection to a database:
 ```clojure
 (def db (bq/get-db {:db-host "localhost"
-                    :db-name "bq_test"
-                    :user "username"
+                    :db-name "bedquilt_test"
+                    :user "some_user"
                     :password "password"}))
 ```
 
