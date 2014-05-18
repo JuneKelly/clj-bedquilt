@@ -6,12 +6,12 @@ A JSON document store on top of PostgreSQL, using Clojure.
 
 
 Import the `bedquilt.core` namespace:
-```
+```clojure
 (require '[bedquilt.core :as bq])
 ```
 
 Get a connection to a database:
-```
+```clojure
 (def db (bq/get-db {:db-host "localhost"
                     :db-name "bq_test"
                     :user "username"
@@ -19,7 +19,7 @@ Get a connection to a database:
 ```
 
 Insert some documents:
-```
+```clojure
 (bq/save! db :people {:name "John Doe", :age 27})
 ; => "Xj0VokRuU05wSLzBrMyfvQ"
 
@@ -29,20 +29,20 @@ Insert some documents:
 New collections (tables) are automatically created on first write.
 
 Ids are automatically generated, unless the document includes an `_id` field:
-```
+```clojure
 (bq/save! db :people {:_id "mike.blow@example.com" :name "Mike Blow", :age 53})
 ; => "mike.blow@example.com"
 ```
 
 Query for existing documents by their `_id` field:
-```
+```clojure
 (bq/find-one db :people "mike.blow@example.com")
 ; => {:_id "mike.blow@example.com", :name "Mike Blow", :age 53}
 ```
 
 
 Delete existig documents:
-```
+```clojure
 (bq/delete! db :people "mike.blow@example.com")
 ; => true
 ```
