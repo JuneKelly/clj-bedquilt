@@ -59,9 +59,13 @@ Delete existig documents:
 ; => true
 ```
 
+## Warnings
+- This is alpha-quality work right now, don't use in production
+- The performance is pretty bad, I'll figure out how to make in not suck later
+
+
 ## License
 
-Copyright © 2014 FIXME
+Copyright © 2014 Shane Kilkelly
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+MIT License, do whatever you want.
