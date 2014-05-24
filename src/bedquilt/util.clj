@@ -27,3 +27,19 @@
       (-> parsed-json
           (assoc :_id id))
       nil)))
+
+
+(defn db-sql
+  "A helper which generates sql for creating a new bedquilt database"
+  [db-name, user]
+  (format
+   "CREATE DATABASE %s
+    WITH OWNER = %s
+    ENCODING = 'UTF8'
+    TABLESPACE = pg_default
+    LC_COLLATE = 'C'
+    LC_CTYPE = 'C'
+    CONNECTION LIMIT = -1
+    TEMPLATE template0;"
+   (name db-name)
+   (name user)))
