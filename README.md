@@ -13,7 +13,8 @@ CREATE DATABASE bedquilt_test
        TABLESPACE = pg_default
        LC_COLLATE = 'C'
        LC_CTYPE = 'C'
-       CONNECTION LIMIT = -1;
+       CONNECTION LIMIT = -1
+       TEMPLATE template0;
 ```
 
 
@@ -58,6 +59,10 @@ Delete existig documents:
 (bq/delete! db :people "mike.blow@example.com")
 ; => true
 ```
+
+## Tests
+To run the test suite: `lein spec`
+
 
 ## Warnings
 - This is alpha-quality work right now, don't use in production
