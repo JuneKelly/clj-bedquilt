@@ -22,3 +22,13 @@
                              [:data "json" :not :null]))
       true)
     false))
+
+
+(defn drop-collection! [db-spec collection]
+  (if (collection-exists? db-spec collection)
+    (do
+      (jdbc/db-do-commands
+       db-spec
+       (jdbc/drop-table-ddl (name collection)))
+      true)
+    false))
