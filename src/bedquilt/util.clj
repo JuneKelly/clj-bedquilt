@@ -21,7 +21,7 @@
 (defn row->map
   "Transform a database row into a clojure map, resembling json."
   [row]
-  (let [parsed-json (json/parse-string (str (:data row)))
+  (let [parsed-json (json/parse-string (str (:data row)) true)
         id (:_id row)]
     (if (not (nil? id))
       (-> parsed-json

@@ -41,3 +41,18 @@
                    "c" [3 4]}
                   data)
         (should-not-contain "_id" data))))
+
+
+(describe "row->map function"
+
+  (it "should take a map with :_id and :data string, and produce a map
+       of the parsed json, merged with the :_id"
+      (let [r {:_id "asdf" :data "{\"a\":1,\"b\":2}"}
+            m (util/row->map r)]
+        (should== [:_id :a :b] (keys m))
+        (should== {:_id "asdf", :a 1, :b 2} m)))
+
+  (it "should return nil if the row does not have an :_id key"
+      (let [r {:data "{\"a\":1,\"b\":2}"}
+            m (util/row->map r)]
+        (should= nil m))))
