@@ -55,5 +55,7 @@
    returns true if the deletion affected an existing document,
    or false if no documents were removed"
   [dbspec collection id]
-  (let [result (db/delete-document! dbspec collection id)]
-    (= 1 (first result))))
+  (if (admin/collection-exists? dbspec collection)
+    (let [result (db/delete-document! dbspec collection id)]
+      (= 1 (first result)))
+    false))

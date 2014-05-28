@@ -58,3 +58,24 @@
       (let [id (bq/save! db :test {:_id "yesexists" :a 1})
             result (bq/find-one db :test "doesntexist")]
         (should= nil result))))
+
+
+(describe "delete!"
+
+  (before (do (h/cleanse-database! db)))
+
+  (it "should delete an existing document"
+      (let [original-doc {:_id "asdf" :lol "wtf"}
+            id (bq/save! db :test original-doc)]
+        (should-not= nil (bq/find-one db :test id))
+        (should= true (bq/delete! db :test id))
+        (should= nil (bq/find-one db :test id))))
+
+  (it "should return false if the document does not exist"
+      (let [original-doc {:_id "asdf" :lol "wtf"}
+            id (bq/save! db :test original-doc)]
+        (should-not= nil (bq/find-one db :test id))
+        (should= false (bq/delete! db :test "someotherid"))))
+
+  (it "should return false if the collection doesn't exist anyway"
+      (should= false (bq/delete! db :test "asdf"))))
