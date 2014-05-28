@@ -61,7 +61,8 @@ Delete existig documents:
 ```
 
 ## Tests
-To run the test suite, first set the following Environment Variables:
+To run the test suite, first set up a test database
+and set the following environment variables:
 - `DB_HOST`
 - `DB_NAME`
 - `DB_USER`
