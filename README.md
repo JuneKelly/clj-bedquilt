@@ -61,12 +61,20 @@ Delete existig documents:
 ```
 
 ## Tests
-To run the test suite: `lein spec`
+To run the test suite, first set the following Environment Variables:
+- `DB_HOST`
+- `DB_NAME`
+- `DB_USER`
+- `DB_PASSWORD`
+
+Then run `lein spec`
 
 
-## Warnings
+## Warning!
 - This is alpha-quality work right now, don't use in production
 - The performance is pretty bad, I'll figure out how to make in not suck later
+- Currently there is no API for querying based on the contents
+  of the JSON documents. We're working on it.
 
 
 ## License
