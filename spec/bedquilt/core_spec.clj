@@ -4,6 +4,9 @@
             [speclj.core :refer :all]))
 
 
+(def db (bq/get-db h/db))
+
+
 (describe "get-db function"
 
   (it "should take a map and return a map suitable for use with jdbc"
@@ -16,3 +19,42 @@
                   (keys db))
         (doseq [[_ v] db]
           (should (string? v))))))
+
+
+(describe "save!"
+
+  (before (do (h/cleanse-database! db)))
+
+  (it "should insert a new document in database"
+      (let [doc {:_id "asdf" :a 1 :b 2}
+            id (bq/save! db :test doc)]
+        (should= (:_id doc) id)
+        (should-not= nil (bq/find-one db :test id))))
+
+  (it "should generate an :_id field if none is supplied"
+      (let [doc {:a 1 :b 2}
+            id (bq/save! db :test doc)]
+        (should-not= nil id)
+        (should (string? id))
+        (should= 22 (count id))
+        (should-contain :_id (bq/find-one db :test id)))))
+
+
+(describe "find-one"
+
+  (before (do (h/cleanse-database! db)))
+
+  (it "should retrieve a saved document from a collection"
+      (let [original-doc {:_id "asdf" :lol "wtf"}
+            id (bq/save! db :test original-doc)
+            found-doc (bq/find-one db :test id)]
+        (should== found-doc original-doc)))
+
+  (it "should return nil when neither document nor collection exist"
+      (let [result (bq/find-one db :test "doesntexist")]
+        (should= nil result)))
+
+  (it "should return nil when document is not in collection which does exist"
+      (let [id (bq/save! db :test {:_id "yesexists" :a 1})
+            result (bq/find-one db :test "doesntexist")]
+        (should= nil result))))

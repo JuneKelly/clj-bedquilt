@@ -38,14 +38,16 @@
    whose id matches the one supplied. If the document does not exist then
    nil is returned instead"
   [dbspec collection id]
-  (let [db-row (first (jdbc/query
-                       dbspec
-                       [(str "select * from " (name collection) " "
-                             "where _id = ?")
-                        id]))]
-    (if (not (nil? (:_id db-row)))
-      (util/row->map db-row)
-      nil)))
+  (if (admin/collection-exists? dbspec collection)
+    (let [db-row (first (jdbc/query
+                         dbspec
+                         [(str "select * from " (name collection) " "
+                               "where _id = ?")
+                          id]))]
+      (if (not (nil? (:_id db-row)))
+        (util/row->map db-row)
+        nil))
+    nil))
 
 
 (defn delete!
