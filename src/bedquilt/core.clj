@@ -23,13 +23,13 @@
 
 (defn save!
   "Insert the supplied data into the specified collection"
-  [dbspec collection data]
+  [db-spec collection data]
   (let [row (util/map->row data)]
     (do
-      (admin/create-collection! dbspec collection)
-      (if (db/document-exists? dbspec collection (:_id row))
-        (db/update-document! dbspec collection row)
-        (db/insert-document! dbspec collection row))
+      (admin/create-collection! db-spec collection)
+      (if (db/document-exists? db-spec collection (:_id row))
+        (db/update-document! db-spec collection row)
+        (db/insert-document! db-spec collection row))
       (:_id row))))
 
 
@@ -37,10 +37,10 @@
   "retreive a single document from the specified collection,
    whose id matches the one supplied. If the document does not exist then
    nil is returned instead"
-  [dbspec collection id]
-  (if (admin/collection-exists? dbspec collection)
+  [db-spec collection id]
+  (if (admin/collection-exists? db-spec collection)
     (let [db-row (first (jdbc/query
-                         dbspec
+                         db-spec
                          [(str "select * from " (name collection) " "
                                "where _id = ?")
                           id]))]
@@ -54,8 +54,8 @@
   "Delete a single document from a collection,
    returns true if the deletion affected an existing document,
    or false if no documents were removed"
-  [dbspec collection id]
-  (if (admin/collection-exists? dbspec collection)
-    (let [result (db/delete-document! dbspec collection id)]
+  [db-spec collection id]
+  (if (admin/collection-exists? db-spec collection)
+    (let [result (db/delete-document! db-spec collection id)]
       (= 1 (first result)))
     false))
