@@ -12,6 +12,7 @@
                  [cheshire "5.3.1"]
                  [clj-time "0.7.0"]
                  [crypto-random "1.2.0"]
+                 [com.mchange/c3p0 "0.9.2.1"]
                  [postgresql/postgresql "8.4-702.jdbc4"]]
 
   :profiles {:dev {:dependencies [[speclj "2.5.0"]]}}

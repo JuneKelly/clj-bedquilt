@@ -15,10 +15,8 @@
                            :user "user"
                            :password "password"})]
         (should (map? db))
-        (should== [:subprotocol :subname :user :password]
-                  (keys db))
-        (doseq [[_ v] db]
-          (should (string? v))))))
+        (should== [:datasource]
+                  (keys db)))))
 
 
 (describe "save!"

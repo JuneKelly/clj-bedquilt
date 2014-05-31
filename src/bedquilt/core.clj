@@ -15,10 +15,10 @@
 
 
 (defn get-db [{:keys [db-host db-name user password]}]
-  {:subprotocol "postgresql"
-   :subname (str "//" db-host "/" db-name)
-   :user user
-   :password password})
+  (db/pool {:subprotocol "postgresql"
+            :subname (str "//" db-host "/" db-name)
+            :user user
+            :password password}))
 
 
 (defn save!
