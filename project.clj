@@ -1,4 +1,4 @@
-(defproject bedquilt "0.2.0"
+(defproject bedquilt "0.2.1"
 
   :description "A JSON document store on PostgreSQL"
 
